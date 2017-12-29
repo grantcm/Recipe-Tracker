@@ -19,10 +19,10 @@ import android.widget.TextView;
 import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static com.todo.simpletodo.MainActivity.LIST_ITEMS;
+
 
 /**
  * Created by Grant on 12/26/17.
@@ -31,13 +31,13 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 public class InspectTodoActivity extends AppCompatActivity {
 
     private TextView title;
-
     private ListView tasks;
     private ArrayList<String> taskList;
     private InspectArrayAdapter taskAdapter;
     private ProgressBar progress;
     private Handler mHandler;
-    private static Logger logger;
+
+    public static final String COUNTDOWN = "COUNTDOWN";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,14 +46,10 @@ public class InspectTodoActivity extends AppCompatActivity {
         title = (TextView) findViewById(R.id.title);
         tasks = (ListView) findViewById(R.id.steps);
         progress = (ProgressBar) findViewById(R.id.progress);
-        tasks.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mHandler = new Handler();
-        logger = Logger.getLogger(InspectTodoActivity.class.toString());
 
         Intent intent = getIntent();
         parseIntent(intent);
-        progress = new ProgressBar(this);
-        progress.setIndeterminate(false);
         progress.setMax(taskList.size());
         taskAdapter = new InspectArrayAdapter(this, android.R.layout.simple_list_item_checked, taskList);
         tasks.setAdapter(taskAdapter);
@@ -66,7 +62,7 @@ public class InspectTodoActivity extends AppCompatActivity {
      */
     private void parseIntent(Intent intent) {
         String pageTitle = intent.getStringExtra(MainActivity.TITLE);
-        String[] tasks = intent.getStringArrayExtra(MainActivity.LIST_ITEMS);
+        String[] tasks = intent.getStringArrayExtra(LIST_ITEMS);
         //TODO: Parse enum extra
         //Type priority = intent.get
 
@@ -77,7 +73,7 @@ public class InspectTodoActivity extends AppCompatActivity {
         }
     }
 
-    protected void setupOnClickListener(){
+    private void setupOnClickListener(){
         tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -86,10 +82,16 @@ public class InspectTodoActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         int count = tasks.getCheckedItemCount();
-                        progress.setProgress(count);
+                        progress.setProgress(count, true);
                     }
                 });
             }
         });
+    }
+
+    private void launchClock(){
+        Intent intent = new Intent(this, ClockActivity.class);
+        intent.putExtra(COUNTDOWN, 1);
+        startActivity(intent);
     }
 }
