@@ -1,42 +1,85 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import static android.R.attr.id;
-
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Todo> items;
-    private TodoArrayAdapter itemsAdapter;
+    private ArrayList<Recipe> items;
+    private RecipeArrayAdapter itemsAdapter;
     private ListView listView;
+    private Data data;
+    private boolean dataChanged = false;
 
     //TEST DATA
     private final String[] testData = {"One", "Two", "Three", "Four"};
+    private final static String FILENAME = "main.txt";
 
-    public final static String LIST_ITEMS = "com.todo.LIST.ITEMS";
-    public final static String TITLE = "com.todo.TITLE";
-    public final static String PRIORITY = "como.todo.PRIORITY";
+    public final static String LIST_ITEMS = "com.recipe.LIST.ITEMS";
+    public final static String TITLE = "com.recipe.TITLE";
+    public final static String PRIORITY = "com.recipe.PRIORITY";
+
+    public MainActivity() {
+        this.data = new Data();
+        this.items = new ArrayList<>();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        readData();
         listView = (ListView) findViewById(R.id.lvItems);
-        items = new ArrayList<>();
-        itemsAdapter = new TodoArrayAdapter(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new RecipeArrayAdapter(this, android.R.layout.simple_list_item_1, items);
         listView.setAdapter(itemsAdapter);
         setupOnClickListener();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        writeData();
+        dataChanged = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        readData();
+        dataChanged = false;
+    }
+
+    /**
+     * Converts recipe list to string list then writes to file
+     */
+    private void writeData() {
+        if (dataChanged) {
+            ArrayList<String> itemList = new ArrayList<>();
+            for(Recipe r: items) {
+                itemList.add(r.getTitle());
+            }
+            data.writeFile(FILENAME, itemList, this);
+        }
+    }
+
+    /**
+     * Reads data from file into item list
+     */
+    private void readData(){
+        ArrayList<String> itemList = data.readFile(FILENAME, this);
+        if (itemList.size() != items.size()) {
+            items.clear();
+            for(String s: itemList) {
+                items.add(new Recipe(s));
+            }
+        }
     }
 
     private void setupOnClickListener(){
@@ -46,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                         items.remove(position);
                         itemsAdapter.notifyDataSetChanged();
+                        dataChanged = true;
                         return true;
                     }
                 }
@@ -56,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         //Launch Inspection Activity
-                        Todo todo = items.get(position);
-                        launchInspectActivity(todo);
+                        Recipe recipe = items.get(position);
+                        launchInspectActivity(recipe);
                     }
                 }
         );
@@ -67,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
      * Launches the activity to inspect the item
      * @param item
      */
-    public void launchInspectActivity(Todo item) {
-        Intent intent = new Intent(this, InspectTodoActivity.class);
+    public void launchInspectActivity(Recipe item) {
+        Intent intent = new Intent(this, InspectRecipeActivity.class);
         intent.putExtra(LIST_ITEMS, testData);
         intent.putExtra(TITLE, item.getTitle());
         intent.putExtra(PRIORITY, item.getPriority());
@@ -82,13 +126,15 @@ public class MainActivity extends AppCompatActivity {
     public void onClickAdd(View view) {
         EditText et = (EditText) findViewById(R.id.etNewTask);
         String text = et.getText().toString();
-        Todo todo = new Todo(text, new String[] {});
-        if (items.contains(todo)) {
+        Recipe recipe = new Recipe(text, new String[] {});
+        if (items.contains(recipe)) {
             //Duplicate Entry
         } else {
-            itemsAdapter.add(todo);
+            itemsAdapter.add(recipe);
             et.setText("");
         }
+
+        dataChanged = true;
     }
 
 }

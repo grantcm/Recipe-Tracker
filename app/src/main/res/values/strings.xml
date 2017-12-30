@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SimpleTodo</string>
     <string name="add_item_button">Add Item</string>
-    <string name="new_task_box">Add a new task</string>
+    <string name="new_recipe">Add a New Recipe</string>
     <string name="card_title">Title here</string>
     <string name="start_timer">Start Clock</string>
     <string name="stop_timer">Stop Timer</string>

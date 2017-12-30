@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 /**
  * Created by Grant on 12/26/17.
@@ -10,18 +10,22 @@ enum Type {
     High
 };
 
-public class Todo {
+public class Recipe {
     private Type priority;
     private String title;
     private String[] subTitle;
 
-    public Todo(Type priority, String title, String[] subTitle) {
+    public Recipe(String title) {
+        this.title = title;
+    }
+
+    public Recipe(Type priority, String title, String[] subTitle) {
         this.priority=priority;
         this.title = title;
         this.subTitle = subTitle;
     }
 
-    public Todo(String title, String[] subTitle) {
+    public Recipe(String title, String[] subTitle) {
         this.title = title;
         this.subTitle = subTitle;
     }
@@ -40,8 +44,8 @@ public class Todo {
 
     @Override
     public boolean equals(Object other) {
-        return getTitle().equals(((Todo) other).getTitle())
-                && getSubTitle().equals(((Todo) other).getSubTitle())
-                && getPriority().equals(((Todo) other).getPriority());
+        return getTitle().equals(((Recipe) other).getTitle())
+                && getSubTitle().equals(((Recipe) other).getSubTitle())
+                && getPriority().equals(((Recipe) other).getPriority());
     }
 }

@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,24 +24,28 @@ public class ClockActivity extends AppCompatActivity {
     private String message;
     private CountDownTimer countDownTimer;
     private Button button;
+    private Data data;
+
+    public String FILENAME;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.clock_layout);
+        data = new Data();
         clock = (TextView) findViewById(R.id.textClock);
         instructions = (TextView) findViewById(R.id.instructions);
         button = (Button) findViewById(R.id.startButton);
         Intent intent = getIntent();
-        length = intent.getIntExtra(InspectTodoActivity.COUNTDOWN, 0) * conversion;
-        message = intent.getStringExtra(InspectTodoActivity.INSTRUCTION);
+        length = intent.getIntExtra(InspectRecipeActivity.COUNTDOWN, 0) * conversion;
+        message = intent.getStringExtra(InspectRecipeActivity.INSTRUCTION);
         instructions.setText(message);
         clock.setText(Long.toString(length/conversion));
     }
 
     /**
-     *
+     * Initiates countdown timer object and sets up logic for finish
      */
     private void startCountdown(long length) {
         countDownTimer = new CountDownTimer(length, conversion){
@@ -61,6 +65,11 @@ public class ClockActivity extends AppCompatActivity {
         countDownTimer.start();
     }
 
+    /**
+     * Sets logic for the timer button
+     * Alternates between Start, Stop, and Return when finished
+     * @param view
+     */
     public void onClickClockButton(View view){
         if(!started && !finished){
             startCountdown(length);

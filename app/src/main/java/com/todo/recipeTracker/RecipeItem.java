@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 /**
  * Created by Grant on 12/29/17.
@@ -39,5 +39,15 @@ public class RecipeItem {
 
     public int getTime() {
         return time;
+    }
+
+    public String toString() {
+        StringBuilder output = new StringBuilder();
+        output.append(step);
+        output.append(" ");
+        output.append(checked);
+        output.append(" ");
+        output.append(time);
+        return output.toString();
     }
 }

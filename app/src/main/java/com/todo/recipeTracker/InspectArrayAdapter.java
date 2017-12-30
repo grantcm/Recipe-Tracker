@@ -1,7 +1,6 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -15,8 +14,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import static com.todo.simpletodo.InspectTodoActivity.COUNTDOWN;
-
 
 /**
  * Created by Grant on 12/28/17.
@@ -27,11 +24,11 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
     private LayoutInflater mInflater;
     private int mResource;
     private ProgressBar progressBar;
-    private InspectTodoActivity parentClass;
+    private InspectRecipeActivity parentClass;
     final private static String SEPARATOR = ". ";
 
     public InspectArrayAdapter(Context context, int resource, List<RecipeItem> objects,
-                               ProgressBar progressBar, InspectTodoActivity parentClass) {
+                               ProgressBar progressBar, InspectRecipeActivity parentClass) {
         super(context, R.layout.recipe_row, objects);
         mInflater = LayoutInflater.from(context);
         mResource = resource;
@@ -88,6 +85,7 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
+                parentClass.setDataChanged(true);
                 if (check.isChecked()){
                     progressBar.setProgress(progressBar.getProgress()+1, true);
                     item.setChecked(true);

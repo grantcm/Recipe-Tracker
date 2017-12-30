@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,12 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.todo.simpletodo.FeedReaderContract.FeedEntry;
+import com.todo.recipeTracker.FeedReaderContract.FeedEntry;
 
-import static com.todo.simpletodo.FeedReaderContract.FeedEntry.COLUMN_NAME_ITEM_ID;
-import static com.todo.simpletodo.FeedReaderContract.FeedEntry.COLUMN_NAME_NULLABLE;
-import static com.todo.simpletodo.FeedReaderContract.FeedEntry.PROJECTION;
-import static com.todo.simpletodo.FeedReaderContract.FeedEntry.TABLE_NAME;
+import static com.todo.recipeTracker.FeedReaderContract.FeedEntry.COLUMN_NAME_ITEM_ID;
+import static com.todo.recipeTracker.FeedReaderContract.FeedEntry.COLUMN_NAME_NULLABLE;
+import static com.todo.recipeTracker.FeedReaderContract.FeedEntry.PROJECTION;
+import static com.todo.recipeTracker.FeedReaderContract.FeedEntry.TABLE_NAME;
 
 /**
  * Created by Grant on 12/26/17.

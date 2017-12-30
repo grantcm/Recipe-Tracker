@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.provider.BaseColumns;
 

@@ -1,4 +1,4 @@
-package com.todo.simpletodo;
+package com.todo.recipeTracker;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
