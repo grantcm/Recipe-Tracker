@@ -15,8 +15,8 @@
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:maxLines="1"
-        android:padding="10dp"
-        android:text="@string/card_title"
+        android:layout_margin="10dp"
+        android:textSize="40sp"
         android:textAlignment="center" />
 
     <ProgressBar
@@ -43,7 +43,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:padding="10dp"
-        android:choiceMode="multipleChoice"
         android:scrollbarStyle="outsideOverlay"
         />
 </RelativeLayout>

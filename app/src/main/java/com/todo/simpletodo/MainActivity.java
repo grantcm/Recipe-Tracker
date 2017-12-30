@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
 
     //TEST DATA
-    private final String[] testData = {"1", "2", "3", "4"};
+    private final String[] testData = {"One", "Two", "Three", "Four"};
 
     public final static String LIST_ITEMS = "com.todo.LIST.ITEMS";
     public final static String TITLE = "com.todo.TITLE";

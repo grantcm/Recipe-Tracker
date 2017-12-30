@@ -19,6 +19,9 @@
         <activity android:name=".InspectTodoActivity">
 
         </activity>
+        <activity android:name=".ClockActivity">
+
+        </activity>
     </application>
 
 </manifest>

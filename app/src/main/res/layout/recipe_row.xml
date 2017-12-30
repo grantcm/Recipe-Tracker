@@ -15,8 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:scaleX=".7"
-        android:scaleY=".7"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:layout_margin="10dp"
          />
 </RelativeLayout>

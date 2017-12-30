@@ -32,12 +32,12 @@ public class InspectTodoActivity extends AppCompatActivity {
 
     private TextView title;
     private ListView tasks;
-    private ArrayList<String> taskList;
+    private ArrayList<RecipeItem> taskList;
     private InspectArrayAdapter taskAdapter;
     private ProgressBar progress;
-    private Handler mHandler;
 
     public static final String COUNTDOWN = "COUNTDOWN";
+    public static final String INSTRUCTION = "INSTRUCTIONS";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,14 +46,13 @@ public class InspectTodoActivity extends AppCompatActivity {
         title = (TextView) findViewById(R.id.title);
         tasks = (ListView) findViewById(R.id.steps);
         progress = (ProgressBar) findViewById(R.id.progress);
-        mHandler = new Handler();
 
         Intent intent = getIntent();
         parseIntent(intent);
         progress.setMax(taskList.size());
-        taskAdapter = new InspectArrayAdapter(this, android.R.layout.simple_list_item_checked, taskList);
+        taskAdapter = new InspectArrayAdapter(this, android.R.layout.simple_list_item_checked,
+                taskList, progress, this);
         tasks.setAdapter(taskAdapter);
-        setupOnClickListener();
     }
 
     /**
@@ -69,29 +68,15 @@ public class InspectTodoActivity extends AppCompatActivity {
         title.setText(pageTitle);
         taskList = new ArrayList<>();
         for(String s: tasks){
-            taskList.add(s);
+            taskList.add(new RecipeItem(s, false, 10));
         }
     }
 
-    private void setupOnClickListener(){
-        tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int count = tasks.getCheckedItemCount();
-                        progress.setProgress(count, true);
-                    }
-                });
-            }
-        });
-    }
 
-    private void launchClock(){
+    public void launchClock(int time, String step){
         Intent intent = new Intent(this, ClockActivity.class);
-        intent.putExtra(COUNTDOWN, 1);
+        intent.putExtra(COUNTDOWN, time);
+        intent.putExtra(INSTRUCTION, step);
         startActivity(intent);
     }
 }
