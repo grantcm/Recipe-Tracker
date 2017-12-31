@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String PRIORITY = "com.recipe.PRIORITY";
 
     public MainActivity() {
-        this.data = new Data();
+        this.data = new Data(this);
         this.items = new ArrayList<>();
     }
 
@@ -46,14 +46,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         writeData();
-        dataChanged = false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         readData();
-        dataChanged = false;
     }
 
     /**
@@ -65,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
             for(Recipe r: items) {
                 itemList.add(r.getTitle());
             }
-            data.writeFile(FILENAME, itemList, this);
+            data.writeFile(FILENAME, itemList);
+            dataChanged = false;
         }
     }
 
@@ -73,12 +72,13 @@ public class MainActivity extends AppCompatActivity {
      * Reads data from file into item list
      */
     private void readData(){
-        ArrayList<String> itemList = data.readFile(FILENAME, this);
+        ArrayList<String> itemList = data.readFile(FILENAME);
         if (itemList.size() != items.size()) {
             items.clear();
             for(String s: itemList) {
                 items.add(new Recipe(s));
             }
+            dataChanged = false;
         }
     }
 

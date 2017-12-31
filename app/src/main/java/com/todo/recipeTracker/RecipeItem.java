@@ -7,7 +7,7 @@ package com.todo.recipeTracker;
 public class RecipeItem {
     private String step;
     private boolean checked;
-    private int time = 0;
+    private long time = 0;
 
     public RecipeItem(String step) {
         this(step, false);
@@ -18,7 +18,7 @@ public class RecipeItem {
         this.checked=checked;
     }
 
-    public RecipeItem(String step, boolean checked, int time) {
+    public RecipeItem(String step, boolean checked, long time) {
         this(step, checked);
         this.time = time;
     }
@@ -37,7 +37,11 @@ public class RecipeItem {
         return time != 0;
     }
 
-    public int getTime() {
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public long getTime() {
         return time;
     }
 

@@ -9,15 +9,27 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/edit_recipe"
         android:gravity="center"
         android:maxLines="1"
         android:layout_margin="10dp"
         android:textSize="40sp"
         android:textAlignment="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_recipe"
+        android:id="@+id/edit_recipe"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        />
 
     <ProgressBar
         android:id="@+id/progress"
@@ -25,8 +37,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_below="@id/title"
         android:indeterminate="false"
@@ -40,8 +50,6 @@
         android:id = "@+id/steps"
         android:layout_below="@id/progress"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:padding="10dp"
         android:scrollbarStyle="outsideOverlay"
         />

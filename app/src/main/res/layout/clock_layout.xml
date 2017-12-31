@@ -29,10 +29,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:layout_below="@id/textClock"
         android:layout_alignParentBottom="true"
         android:onClick="onClickClockButton"
         android:text="@string/start_timer"
+        android:textSize="36sp"
+        android:gravity="center_horizontal"
         android:layout_gravity= "center_horizontal"
         />
 

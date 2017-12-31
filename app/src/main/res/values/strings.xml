@@ -3,8 +3,13 @@
     <string name="add_item_button">Add Item</string>
     <string name="new_recipe">Add a New Recipe</string>
     <string name="card_title">Title here</string>
-    <string name="start_timer">Start Clock</string>
+    <string name="start_timer">Start Timer</string>
     <string name="stop_timer">Stop Timer</string>
     <string name="clock_done">Done</string>
     <string name="return_button">Next Step</string>
+    <string name="new_step">Add a New Step</string>
+    <string name="add_button">Add</string>
+    <string name="timer">Timer:</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="edit_recipe">Edit Recipe</string>
 </resources>

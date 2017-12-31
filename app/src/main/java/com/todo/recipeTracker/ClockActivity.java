@@ -18,27 +18,22 @@ public class ClockActivity extends AppCompatActivity {
     private TextView instructions;
     private long length;
     private long remainingTime = 0;
-    private final int conversion = 1000;
+    private final long conversion = 1000;
     private boolean started = false;
     private boolean finished = false;
     private String message;
     private CountDownTimer countDownTimer;
     private Button button;
-    private Data data;
-
-    public String FILENAME;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.clock_layout);
-        data = new Data();
         clock = (TextView) findViewById(R.id.textClock);
         instructions = (TextView) findViewById(R.id.instructions);
         button = (Button) findViewById(R.id.startButton);
         Intent intent = getIntent();
-        length = intent.getIntExtra(InspectRecipeActivity.COUNTDOWN, 0) * conversion;
+        length = intent.getLongExtra(InspectRecipeActivity.COUNTDOWN, 0) * conversion;
         message = intent.getStringExtra(InspectRecipeActivity.INSTRUCTION);
         instructions.setText(message);
         clock.setText(Long.toString(length/conversion));
@@ -76,12 +71,10 @@ public class ClockActivity extends AppCompatActivity {
             button.setText(R.string.stop_timer);
             started=true;
         } else if (started && !finished){
-            if (countDownTimer != null) {
-                length = remainingTime;
-                countDownTimer.cancel();
-                button.setText(R.string.start_timer);
-                started = false;
-            }
+            length = remainingTime;
+            countDownTimer.cancel();
+            button.setText(R.string.start_timer);
+            started = false;
         } else {
             finish();
         }

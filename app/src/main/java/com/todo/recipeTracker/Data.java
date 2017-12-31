@@ -15,9 +15,15 @@ import java.util.ArrayList;
 
 public class Data {
 
-    public  Data(){};
+    private static Activity context;
 
-    public ArrayList<String> readFile(String fileName, Activity context) {
+    public Data(){}
+
+    public  Data(Activity context){
+        this.context = context;
+    }
+
+    public ArrayList<String> readFile(String fileName) {
         File readable = new File(getDir(context), fileName);
         try {
             return new ArrayList<>(FileUtils.readLines(readable));
@@ -26,7 +32,7 @@ public class Data {
         }
     }
 
-    public void writeFile(String fileName, ArrayList<String> toWrite, Activity context) {
+    public void writeFile(String fileName, ArrayList<String> toWrite) {
         File writeable = new File(getDir(context), fileName);
         try {
             FileUtils.writeLines(writeable, toWrite);
@@ -35,7 +41,7 @@ public class Data {
         }
     }
 
-    public void deleteFile(String fileName, Activity context){
+    public void deleteFile(String fileName){
         File toDelete = new File(getDir(context), fileName);
         toDelete.delete();
     }

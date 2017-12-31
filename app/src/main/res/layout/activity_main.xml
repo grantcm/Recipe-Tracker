@@ -37,7 +37,4 @@
         android:layout_toStartOf="@id/btnAddItem"
         android:layout_alignParentBottom ="true"
         />
-
-
-
 </RelativeLayout>
