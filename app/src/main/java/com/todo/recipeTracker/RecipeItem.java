@@ -6,7 +6,7 @@ package com.todo.recipeTracker;
 
 public class RecipeItem {
     private String step;
-    private boolean checked;
+    private boolean checked, editClicked = false;
     private long time = 0;
 
     public RecipeItem(String step) {
@@ -33,6 +33,8 @@ public class RecipeItem {
         return step;
     }
 
+    public void setStep(String step) { this.step = step; }
+
     public boolean getRequiresClock() {
         return time != 0;
     }
@@ -44,6 +46,10 @@ public class RecipeItem {
     public long getTime() {
         return time;
     }
+
+    public void setEditClicked (boolean clicked) { this.editClicked = clicked; }
+
+    public boolean getEditClicked () { return editClicked; }
 
     public String toString() {
         StringBuilder output = new StringBuilder();

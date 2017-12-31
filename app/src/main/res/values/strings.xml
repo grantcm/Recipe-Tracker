@@ -10,6 +10,7 @@
     <string name="new_step">Add a New Step</string>
     <string name="add_button">Add</string>
     <string name="timer">Timer:</string>
-    <string name="enter_time">Enter Time</string>
-    <string name="edit_recipe">Edit Recipe</string>
+    <string name="enter_time">Time</string>
+    <string name="edit_string">Edit</string>
+    <string name="done">Done</string>
 </resources>

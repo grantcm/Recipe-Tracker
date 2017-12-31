@@ -33,8 +33,8 @@ public class ClockActivity extends AppCompatActivity {
         instructions = (TextView) findViewById(R.id.instructions);
         button = (Button) findViewById(R.id.startButton);
         Intent intent = getIntent();
-        length = intent.getLongExtra(InspectRecipeActivity.COUNTDOWN, 0) * conversion;
-        message = intent.getStringExtra(InspectRecipeActivity.INSTRUCTION);
+        length = intent.getLongExtra(InspectRecipeFragment.COUNTDOWN, 0) * conversion;
+        message = intent.getStringExtra(InspectRecipeFragment.INSTRUCTION);
         instructions.setText(message);
         clock.setText(Long.toString(length/conversion));
     }
