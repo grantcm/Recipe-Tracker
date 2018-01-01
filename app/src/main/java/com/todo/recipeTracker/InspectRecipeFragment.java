@@ -30,6 +30,7 @@ public class InspectRecipeFragment extends Fragment {
     private ProgressBar progress;
     private Data data;
     private Button editButton;
+    private Button addRowButton;
     private boolean dataChanged = false;
     private boolean inEditView = false;
 
@@ -70,9 +71,10 @@ public class InspectRecipeFragment extends Fragment {
         tasks = (ListView) view.findViewById(R.id.steps);
         progress = (ProgressBar) view.findViewById(R.id.progress);
         editButton = (Button) view.findViewById(R.id.edit_recipe);
+        addRowButton = (Button) view.findViewById(R.id.add_new_row_button);
         title.setText(titleMessage);
         inspectArrayAdapter = new InspectArrayAdapter(this.getContext(),
-                android.R.layout.simple_list_item_checked, taskList, progress, this);
+                android.R.layout.simple_list_item_checked, taskList, this);
         tasks.setAdapter(inspectArrayAdapter);
 
         return view;
@@ -154,6 +156,7 @@ public class InspectRecipeFragment extends Fragment {
         dataChanged = true;
         if (editButton.getText().toString().equals("Done")) {
             editButton.setText(R.string.edit_string);
+            addRowButton.setVisibility(View.GONE);
             inEditView = false;
             for (RecipeItem r : taskList) {
                 r.setEditClicked(false);
@@ -161,10 +164,16 @@ public class InspectRecipeFragment extends Fragment {
             inspectArrayAdapter.notifyDataSetChanged();
         } else {
             editButton.setText(R.string.done);
+            addRowButton.setVisibility(View.VISIBLE);
             inEditView = true;
             inspectArrayAdapter.notifyDataSetChanged();
         }
-
     }
 
+    public void addNewRow() {
+        if (inEditView) {
+            dataChanged = true;
+            inspectArrayAdapter.add(new RecipeItem("New"));
+        }
+    }
 }

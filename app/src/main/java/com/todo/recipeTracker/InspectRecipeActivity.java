@@ -56,4 +56,10 @@ public class InspectRecipeActivity extends FragmentActivity {
                 .findFragmentByTag(DISPLAYED_FRAGMENT);
         fragment.updateMainViewToEdit();
     }
+
+    public void onClickAddNewRow(View v) {
+        InspectRecipeFragment fragment = (InspectRecipeFragment) fragmentManager
+                .findFragmentByTag(DISPLAYED_FRAGMENT);
+        fragment.addNewRow();
+    }
 }

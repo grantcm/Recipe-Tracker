@@ -87,9 +87,11 @@ public class MainActivity extends AppCompatActivity {
                 new AdapterView.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                        data.deleteFile(items.get(position).getTitle()+".txt");
                         items.remove(position);
                         itemsAdapter.notifyDataSetChanged();
                         dataChanged = true;
+                        writeData();
                         return true;
                     }
                 }

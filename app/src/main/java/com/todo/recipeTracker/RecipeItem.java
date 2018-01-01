@@ -1,5 +1,7 @@
 package com.todo.recipeTracker;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by Grant on 12/29/17.
  */
@@ -27,19 +29,19 @@ public class RecipeItem {
         return checked;
     }
 
-    public void setChecked(boolean checked) {this.checked = checked; }
+    public void setChecked(@NonNull boolean checked) {this.checked = checked; }
 
     public String getStep() {
         return step;
     }
 
-    public void setStep(String step) { this.step = step; }
+    public void setStep(@NonNull String step) { this.step = step; }
 
     public boolean getRequiresClock() {
         return time != 0;
     }
 
-    public void setTime(long time) {
+    public void setTime(@NonNull long time) {
         this.time = time;
     }
 
@@ -47,7 +49,7 @@ public class RecipeItem {
         return time;
     }
 
-    public void setEditClicked (boolean clicked) { this.editClicked = clicked; }
+    public void setEditClicked (@NonNull boolean clicked) { this.editClicked = clicked; }
 
     public boolean getEditClicked () { return editClicked; }
 

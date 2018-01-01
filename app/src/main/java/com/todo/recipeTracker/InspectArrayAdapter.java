@@ -14,8 +14,11 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
+import static com.todo.recipeTracker.R.id.text;
 import static com.todo.recipeTracker.R.id.textView;
 
 
@@ -27,16 +30,14 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
 
     private LayoutInflater mInflater;
     private int mResource;
-    private ProgressBar progressBar;
     private InspectRecipeFragment parentClass;
     final private static String SEPARATOR = ". ";
 
     public InspectArrayAdapter(Context context, int resource, List<RecipeItem> objects,
-                               ProgressBar progressBar, InspectRecipeFragment parentClass) {
+                               InspectRecipeFragment parentClass) {
         super(context, R.layout.recipe_row, objects);
         mInflater = LayoutInflater.from(context);
         mResource = resource;
-        this.progressBar=progressBar;
         this.parentClass = parentClass;
     }
 
@@ -51,49 +52,46 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
     private View createViewFromResource(LayoutInflater inflater, int position,
                                         View convertView, final ViewGroup parent, int resource) {
         RecipeItem item = getItem(position);
-        ViewHolder viewHolder = null;
-        if (convertView != null){
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
 
-        if (viewHolder == null){
-            viewHolder = new ViewHolder();
+        if (item.getEditClicked()) {
+            convertView = inflater.inflate(R.layout.edit_recipe_row, parent, false);
 
-            viewHolder.inspectView = inflater.inflate(R.layout.recipe_row, parent, false);
-            viewHolder.editView = inflater.inflate(R.layout.edit_recipe_row, parent, false);
-            viewHolder.text = (TextView) viewHolder.inspectView.findViewById(textView);
-            viewHolder.check = (CheckBox) viewHolder.inspectView.findViewById(R.id.checkBox);
-            viewHolder.button = (Button) viewHolder.inspectView.findViewById(R.id.edit_button);
-            viewHolder.editText = (EditText) viewHolder.editView.findViewById(R.id.edit_recipe_text);
-            viewHolder.addEditButton = (Button) viewHolder.editView.findViewById(R.id.add_step);
-            viewHolder.timerPrompt = (TextView) viewHolder.editView.findViewById(R.id.timer_prompt);
-            viewHolder.timerButton = (RadioButton) viewHolder.editView.findViewById(R.id.timer_button);
-            viewHolder.timerText = (EditText) viewHolder.editView.findViewById(R.id.time_value);
+            EditText editText = (EditText) convertView.findViewById(R.id.edit_recipe_text);
+            Button addEditButton = (Button) convertView.findViewById(R.id.add_step);
+            TextView timerPrompt = (TextView) convertView.findViewById(R.id.timer_prompt);
+            RadioButton timerButton = (RadioButton) convertView.findViewById(R.id.timer_button);
+            EditText timerText = (EditText) convertView.findViewById(R.id.time_value);
+            editText.setText(item.getStep());
 
-            setupAddButton(viewHolder.addEditButton, position, viewHolder.editText);
-            setupCheckBox(viewHolder.check,item);
-            setupTextView(viewHolder.text, item, position);
-            setupEditButton(viewHolder.button, position);
-            setupTimerRadioButton(viewHolder.timerButton, viewHolder.timerText, viewHolder.timerPrompt);
+            setupAddButton(addEditButton, position, editText, timerText);
+            setupTimerRadioButton(timerButton, timerText, timerPrompt);
 
-            convertView = viewHolder.inspectView;
-            convertView.setTag(viewHolder);
-        }
-
-        if(item.getEditClicked()) {
-            convertView = viewHolder.editView;
-            viewHolder.editText.setText(item.getStep());
-        } else {
-            if(parentClass.getInEditView()) {
-                viewHolder.check.setVisibility(View.GONE);
-                viewHolder.button.setVisibility(View.VISIBLE);
-                viewHolder.text.setText(item.getStep());
-            } else {
-                viewHolder.check.setVisibility(View.VISIBLE);
-                viewHolder.button.setVisibility(View.GONE);
-                viewHolder.text.setText(++position + SEPARATOR.concat(item.getStep()));
+            if (item.getRequiresClock()) {
+                timerButton.setChecked(true);
+                timerText.setVisibility(View.VISIBLE);
+                timerText.setText(Long.toString(item.getTime()));
+                timerPrompt.setVisibility(View.GONE);
             }
-            convertView = viewHolder.inspectView;
+        } else {
+            convertView = inflater.inflate(R.layout.recipe_row, parent, false);
+            TextView text = (TextView) convertView.findViewById(textView);
+            CheckBox check = (CheckBox) convertView.findViewById(R.id.checkBox);
+            Button button = (Button) convertView.findViewById(R.id.edit_button);
+
+            setupCheckBox(check, item);
+            setupTextView(text, item, position);
+            setupEditButton(button, position);
+
+            if (parentClass.getInEditView()) {
+                check.setVisibility(View.GONE);
+                button.setVisibility(View.VISIBLE);
+                text.setText(item.getStep());
+            } else {
+                check.setVisibility(View.VISIBLE);
+                button.setVisibility(View.GONE);
+                String message = Integer.toString(++position).concat(SEPARATOR.concat(item.getStep()));
+                text.setText(message);
+            }
         }
 
         return convertView;
@@ -119,8 +117,9 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
 
     /**
      * Initializes the checkbox with an onclick listener to connect to the progress bar
+     *
      * @param checkBox checkbox to be set up
-     * @param item Recipe Item containing instruction and timer information
+     * @param item     Recipe Item containing instruction and timer information
      * @return Initialized checkbox
      */
     private CheckBox setupCheckBox(final CheckBox checkBox, final RecipeItem item) {
@@ -129,7 +128,7 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
             @RequiresApi(api = Build.VERSION_CODES.N)
             public void onClick(View v) {
                 parentClass.setDataChanged(true);
-                if (checkBox.isChecked()){
+                if (checkBox.isChecked()) {
                     parentClass.updateProgress(1);
                     item.setChecked(true);
                 } else {
@@ -152,13 +151,17 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
         return button;
     }
 
-    private void setupAddButton(final Button button, final int position, final EditText editText) {
+    private void setupAddButton(final Button button, final int position, final EditText editText,
+                                final EditText timerText) {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RecipeItem item = getItem(position);
                 item.setEditClicked(false);
                 item.setStep(editText.getText().toString());
+                if (timerText.getVisibility() == View.VISIBLE) {
+                    item.setTime(Long.parseLong(timerText.getText().toString()));
+                }
                 notifyDataSetChanged();
             }
         });
@@ -175,26 +178,25 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!item.getChecked()) {
+                    if (!item.getChecked()) {
                         //Launch clock activity
                         parentClass.launchClock(item.getTime(), item.getStep());
                     }
                 }
             });
         }
-        return textView;
-    }
 
-    public static class ViewHolder {
-        public View inspectView;
-        public View editView;
-        public EditText editText;
-        public TextView text;
-        public CheckBox check;
-        public Button button;
-        public Button addEditButton;
-        public TextView timerPrompt;
-        public RadioButton timerButton;
-        public EditText timerText;
+        textView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (parentClass.getInEditView()) {
+                    remove(item);
+                    notifyDataSetChanged();
+                    return true;
+                }
+                return false;
+            }
+        });
+        return textView;
     }
 }

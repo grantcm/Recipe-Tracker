@@ -44,8 +44,8 @@ public class Recipe {
 
     @Override
     public boolean equals(Object other) {
-        return getTitle().equals(((Recipe) other).getTitle())
-                && getSubTitle().equals(((Recipe) other).getSubTitle())
-                && getPriority().equals(((Recipe) other).getPriority());
+        return getTitle().equals(((Recipe) other).getTitle());
+//                && getSubTitle().equals(((Recipe) other).getSubTitle())
+//                && getPriority().equals(((Recipe) other).getPriority());
     }
 }
