@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SimpleTodo</string>
+    <string name="app_name">Recipe Tracker</string>
     <string name="add_item_button">Add Item</string>
     <string name="new_recipe">Add a New Recipe</string>
     <string name="card_title">Title here</string>
@@ -14,4 +14,6 @@
     <string name="edit_string">Edit</string>
     <string name="done">Done</string>
     <string name="add_step">Add Step</string>
+    <string name="image_of_recipe">Image of Recipe</string>
+    <string name="start_recipe_button">Start Recipe</string>
 </resources>

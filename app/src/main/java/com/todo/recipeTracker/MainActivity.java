@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         if (dataChanged) {
             ArrayList<String> itemList = new ArrayList<>();
             for(Recipe r: items) {
-                itemList.add(r.getTitle());
+                itemList.add(r.toString());
             }
             data.writeFile(FILENAME, itemList);
             dataChanged = false;

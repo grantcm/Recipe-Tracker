@@ -19,6 +19,7 @@ public class ClockActivity extends AppCompatActivity {
     private long length;
     private long remainingTime = 0;
     private final long conversion = 1000;
+    private final long minutesConversion = 60;
     private boolean started = false;
     private boolean finished = false;
     private String message;
@@ -33,10 +34,24 @@ public class ClockActivity extends AppCompatActivity {
         instructions = (TextView) findViewById(R.id.instructions);
         button = (Button) findViewById(R.id.startButton);
         Intent intent = getIntent();
-        length = intent.getLongExtra(InspectRecipeFragment.COUNTDOWN, 0) * conversion;
-        message = intent.getStringExtra(InspectRecipeFragment.INSTRUCTION);
+        length = intent.getLongExtra(RecipeStepsFragment.COUNTDOWN, 0) * conversion;
+        message = intent.getStringExtra(RecipeStepsFragment.INSTRUCTION);
         instructions.setText(message);
-        clock.setText(Long.toString(length/conversion));
+        clock.setText(convertToMinuteTimer(length));
+    }
+
+    private String convertToMinuteTimer(long time) {
+        String minutes, seconds;
+        if (time < 60) {
+            minutes = "";
+        } else {
+            minutes = Long.toString(time/conversion / minutesConversion);
+        }
+        seconds = Long.toString(time / conversion % minutesConversion);
+        if (seconds.equals("0")) {
+            seconds = "00";
+        }
+        return minutes.concat(":").concat(seconds);
     }
 
     /**
@@ -45,13 +60,13 @@ public class ClockActivity extends AppCompatActivity {
     private void startCountdown(long length) {
         countDownTimer = new CountDownTimer(length, conversion){
             public void onTick(long timeLeft) {
-                clock.setText(Long.toString(timeLeft / conversion));
+                clock.setText(convertToMinuteTimer(timeLeft));
                 remainingTime = timeLeft;
             }
 
             public void onFinish(){
                 clock.setText(R.string.clock_done);
-                clock.setTextSize(150);
+                clock.setTextSize(100);
                 finished = true;
                 button.setText(R.string.return_button);
             }

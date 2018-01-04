@@ -1,5 +1,6 @@
 package com.todo.recipeTracker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,10 +9,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import java.util.ArrayList;
 
@@ -19,18 +24,20 @@ import java.util.ArrayList;
  * Created by Grant on 12/31/17.
  */
 
-public class InspectRecipeFragment extends Fragment {
+public class RecipeStepsFragment extends Fragment {
 
     private static final String TITLE_KEYWORD = "TITLE";
     private String titleMessage;
+    private ViewSwitcher titleViewSwitcher;
     private TextView title;
+    private EditText editTitle;
     private ListView tasks;
     private ArrayList<RecipeItem> taskList;
     private InspectArrayAdapter inspectArrayAdapter;
     private ProgressBar progress;
     private Data data;
-    private Button editButton;
     private Button addRowButton;
+    private RecipeItem lastEdited = null;
     private boolean dataChanged = false;
     private boolean inEditView = false;
 
@@ -43,13 +50,13 @@ public class InspectRecipeFragment extends Fragment {
     public static final int TIME_POS = 2;
 
 
-    public InspectRecipeFragment() {
+    public RecipeStepsFragment() {
         data = new Data();
         taskList = new ArrayList<>();
     }
 
-    public static InspectRecipeFragment newInstance(String title) {
-        InspectRecipeFragment newFragment = new InspectRecipeFragment();
+    public static RecipeStepsFragment newInstance(String title) {
+        RecipeStepsFragment newFragment = new RecipeStepsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(TITLE_KEYWORD, title);
         newFragment.setArguments(bundle);
@@ -66,18 +73,35 @@ public class InspectRecipeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.inspect_fragment, container, false);
-        title = (TextView) view.findViewById(R.id.title);
-        tasks = (ListView) view.findViewById(R.id.steps);
-        progress = (ProgressBar) view.findViewById(R.id.progress);
-        editButton = (Button) view.findViewById(R.id.edit_recipe);
-        addRowButton = (Button) view.findViewById(R.id.add_new_row_button);
+        View view = inflater.inflate(R.layout.steps_fragment, container, false);
+        tasks = view.findViewById(R.id.steps);
+        progress = view.findViewById(R.id.progress);
+        addRowButton = view.findViewById(R.id.add_new_row_button);
+        titleViewSwitcher = view.findViewById(R.id.title_view_switcher);
+        title = titleViewSwitcher.findViewById(R.id.title);
+        editTitle = titleViewSwitcher.findViewById(R.id.edit_recipe_title_box);
         title.setText(titleMessage);
+        setupTitleOnLongClick();
         inspectArrayAdapter = new InspectArrayAdapter(this.getContext(),
                 android.R.layout.simple_list_item_checked, taskList, this);
         tasks.setAdapter(inspectArrayAdapter);
-
         return view;
+    }
+
+    public InputMethodManager getInputMethodManager() {
+        return (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    }
+
+    public boolean handleBackPressed(){
+        if (inEditView && lastEdited.getEditClicked()) {
+            lastEdited.setEditClicked(false);
+            inspectArrayAdapter.notifyDataSetChanged();
+            return true;
+        } else if (inEditView) {
+            updateMainViewToEdit();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -100,6 +124,42 @@ public class InspectRecipeFragment extends Fragment {
 
     public void setDataChanged(boolean dataChanged) {
         this.dataChanged = dataChanged;
+    }
+
+    private void setupTitleOnLongClick() {
+        title.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                updateMainViewToEdit();
+                return true;
+            }
+        });
+
+        tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                RecipeItem item = taskList.get(position);
+                if(inEditView) {
+                    if(lastEdited != null) {
+                        lastEdited.setEditClicked(false);
+                    }
+                    lastEdited = item;
+                    item.setEditClicked(true);
+                    inspectArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        tasks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if(inEditView) {
+                    taskList.remove(position);
+                    inspectArrayAdapter.notifyDataSetChanged();
+                }
+                return true;
+            }
+        });
     }
 
     /**
@@ -127,7 +187,7 @@ public class InspectRecipeFragment extends Fragment {
             int completed = Integer.parseInt(newData.get(0));
             newData.remove(0);
             for(String s: newData) {
-                String[] entry = s.split(" ");
+                String[] entry = s.split("%");
                 taskList.add(new RecipeItem(entry[STEP_POS], Boolean.parseBoolean(entry[CHECKED_POS]),
                         Integer.parseInt(entry[TIME_POS])));
             }
@@ -154,16 +214,21 @@ public class InspectRecipeFragment extends Fragment {
 
     public void updateMainViewToEdit() {
         dataChanged = true;
-        if (editButton.getText().toString().equals("Done")) {
-            editButton.setText(R.string.edit_string);
+
+        if (inEditView) {
             addRowButton.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
             inEditView = false;
+            title.setText(editTitle.getText().toString());
+            titleViewSwitcher.setDisplayedChild(0);
             for (RecipeItem r : taskList) {
                 r.setEditClicked(false);
             }
             inspectArrayAdapter.notifyDataSetChanged();
         } else {
-            editButton.setText(R.string.done);
+            editTitle.setText(title.getText().toString());
+            progress.setVisibility(View.GONE);
+            titleViewSwitcher.setDisplayedChild(1);
             addRowButton.setVisibility(View.VISIBLE);
             inEditView = true;
             inspectArrayAdapter.notifyDataSetChanged();
@@ -173,7 +238,13 @@ public class InspectRecipeFragment extends Fragment {
     public void addNewRow() {
         if (inEditView) {
             dataChanged = true;
-            inspectArrayAdapter.add(new RecipeItem("New"));
+            RecipeItem newItem = new RecipeItem("New", false, true);
+            if (lastEdited != null) {
+                lastEdited.setEditClicked(false);
+            }
+            lastEdited = newItem;
+            inspectArrayAdapter.add(newItem);
+
         }
     }
 }

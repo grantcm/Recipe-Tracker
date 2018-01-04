@@ -38,6 +38,11 @@ public class Recipe {
         return subTitle;
     }
 
+    @Override
+    public String toString() {
+        return title;
+    }
+
     public String getTitle() {
         return title;
     }

@@ -20,6 +20,11 @@ public class RecipeItem {
         this.checked=checked;
     }
 
+    public RecipeItem(String step, boolean checked, boolean editClicked) {
+        this(step, checked);
+        this.editClicked = editClicked;
+    }
+
     public RecipeItem(String step, boolean checked, long time) {
         this(step, checked);
         this.time = time;
@@ -56,9 +61,9 @@ public class RecipeItem {
     public String toString() {
         StringBuilder output = new StringBuilder();
         output.append(step);
-        output.append(" ");
+        output.append("%");
         output.append(checked);
-        output.append(" ");
+        output.append("%");
         output.append(time);
         return output.toString();
     }
