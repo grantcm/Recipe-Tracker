@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class Data {
 
-    private static Activity context;
+    private Activity context;
 
     public Data(){}
 

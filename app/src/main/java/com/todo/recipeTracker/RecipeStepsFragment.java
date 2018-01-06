@@ -51,7 +51,6 @@ public class RecipeStepsFragment extends Fragment {
 
 
     public RecipeStepsFragment() {
-        data = new Data();
         taskList = new ArrayList<>();
     }
 
@@ -66,6 +65,7 @@ public class RecipeStepsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        data = new Data(getActivity());
         Bundle arguments = getArguments();
         titleMessage = arguments.getString(TITLE_KEYWORD);
         FILENAME = titleMessage.concat(FILE_END);
@@ -106,15 +106,14 @@ public class RecipeStepsFragment extends Fragment {
 
     @Override
     public void onResume(){
-        super.onResume();
         readData();
-
+        super.onResume();
     }
 
     @Override
     public void onPause(){
-        super.onPause();
         writeData();
+        super.onPause();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

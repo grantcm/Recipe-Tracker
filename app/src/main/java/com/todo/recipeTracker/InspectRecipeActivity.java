@@ -1,6 +1,7 @@
 package com.todo.recipeTracker;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +18,8 @@ public class InspectRecipeActivity extends FragmentActivity {
     private FragmentManager fragmentManager;
     private final String INSPECT_RECIPE_FRAGMENT = "INSPECT";
     private final String RECIPE_PREVIEW_FRAGMENT = "PREVIEW";
+    private Fragment CURRENTLY_VISIBLE;
+
     private String title;
 
     @Override
@@ -28,8 +31,8 @@ public class InspectRecipeActivity extends FragmentActivity {
         setContentView(R.layout.inspect_activity);
         RecipePreviewFragment recipePreviewFragment = RecipePreviewFragment.newInstance(title);
         fragmentTransaction.add(R.id.main_fragment_container, recipePreviewFragment, RECIPE_PREVIEW_FRAGMENT);
+        CURRENTLY_VISIBLE = recipePreviewFragment;
         fragmentTransaction.commit();
-
     }
 
     private void parseIntent() {
@@ -49,10 +52,16 @@ public class InspectRecipeActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        RecipeStepsFragment fragment = (RecipeStepsFragment) fragmentManager
-                .findFragmentByTag(INSPECT_RECIPE_FRAGMENT);
-        if (fragment != null) {
-            if (!fragment.handleBackPressed()) {
+        if (CURRENTLY_VISIBLE instanceof RecipeStepsFragment) {
+            RecipeStepsFragment recipeStepsFragment = (RecipeStepsFragment) CURRENTLY_VISIBLE;
+            if (!recipeStepsFragment.handleBackPressed()) {
+                CURRENTLY_VISIBLE = fragmentManager
+                        .findFragmentByTag(RECIPE_PREVIEW_FRAGMENT);
+                super.onBackPressed();
+            }
+        } else if (CURRENTLY_VISIBLE instanceof  RecipePreviewFragment) {
+            RecipePreviewFragment recipePreviewFragment = (RecipePreviewFragment) CURRENTLY_VISIBLE;
+            if(!recipePreviewFragment.handleBackPressed()) {
                 super.onBackPressed();
             }
         } else {
@@ -71,6 +80,7 @@ public class InspectRecipeActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.main_fragment_container, inspectActivityFragment, INSPECT_RECIPE_FRAGMENT);
         fragmentTransaction.addToBackStack(null);
+        CURRENTLY_VISIBLE = inspectActivityFragment;
         fragmentTransaction.commit();
     }
 }

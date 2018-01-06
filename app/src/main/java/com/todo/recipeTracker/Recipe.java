@@ -1,41 +1,35 @@
 package com.todo.recipeTracker;
 
+import java.util.ArrayList;
+
 /**
  * Created by Grant on 12/26/17.
  */
 
-enum Type {
-    Low,
-    Medium,
-    High
-};
-
 public class Recipe {
-    private Type priority;
     private String title;
-    private String[] subTitle;
+    private ArrayList<String> ingredients;
 
     public Recipe(String title) {
         this.title = title;
+        this.ingredients = new ArrayList<>();
     }
 
-    public Recipe(Type priority, String title, String[] subTitle) {
-        this.priority=priority;
-        this.title = title;
-        this.subTitle = subTitle;
+    public void setIngredients(ArrayList<String> ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public Recipe(String title, String[] subTitle) {
-        this.title = title;
-        this.subTitle = subTitle;
+    public ArrayList<String> getIngredients() {
+        return ingredients;
     }
 
-    public Type getPriority() {
-        return priority;
-    }
-
-    public String[] getSubTitle() {
-        return subTitle;
+    public String getIngredientsToString () {
+        StringBuilder output = new StringBuilder();
+        for(String s: ingredients) {
+            output.append(s);
+            output.append("%");
+        }
+        return output.toString();
     }
 
     @Override
@@ -50,7 +44,5 @@ public class Recipe {
     @Override
     public boolean equals(Object other) {
         return getTitle().equals(((Recipe) other).getTitle());
-//                && getSubTitle().equals(((Recipe) other).getSubTitle())
-//                && getPriority().equals(((Recipe) other).getPriority());
     }
 }

@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     public final static String LIST_ITEMS = "com.recipe.LIST.ITEMS";
     public final static String TITLE = "com.recipe.TITLE";
-    public final static String PRIORITY = "com.recipe.PRIORITY";
 
     public MainActivity() {
         this.data = new Data(this);
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         readData();
-        listView = (ListView) findViewById(R.id.lvItems);
+        listView = findViewById(R.id.lvItems);
         itemsAdapter = new RecipeArrayAdapter(this, android.R.layout.simple_list_item_1, items);
         listView.setAdapter(itemsAdapter);
         setupOnClickListener();
@@ -82,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * On long click remove the item from the list, delete its files, and update the view
+     * On click launch the inspection activity
+     */
     private void setupOnClickListener(){
         listView.setOnItemLongClickListener(
                 new AdapterView.OnItemLongClickListener() {
@@ -117,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, InspectRecipeActivity.class);
         intent.putExtra(LIST_ITEMS, testData);
         intent.putExtra(TITLE, item.getTitle());
-        intent.putExtra(PRIORITY, item.getPriority());
         startActivity(intent);
     }
 
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickAdd(View view) {
         EditText et = (EditText) findViewById(R.id.etNewTask);
         String text = et.getText().toString();
-        Recipe recipe = new Recipe(text, new String[] {});
+        Recipe recipe = new Recipe(text);
         if (items.contains(recipe)) {
             //Duplicate Entry
         } else {

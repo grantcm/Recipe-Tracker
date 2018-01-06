@@ -61,17 +61,6 @@ public class RecipeArrayAdapter extends ArrayAdapter<Recipe> {
 
         final Recipe item = getItem(position);
         text.setText(item.getTitle());
-        Type priority = item.getPriority();
-
-        if (priority == null) {
-          //Add color later
-        } else if(priority == Type.Low) {
-            text.setBackgroundColor(view.getResources().getColor(Low, null));
-        } else if (priority == Type.Medium) {
-            text.setBackgroundColor(view.getResources().getColor(Medium, null));
-        } else if (priority == Type.High){
-            text.setBackgroundColor(view.getResources().getColor(High, null));
-        }
 
         return view;
     }

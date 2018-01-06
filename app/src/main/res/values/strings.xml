@@ -16,4 +16,5 @@
     <string name="add_step">Add Step</string>
     <string name="image_of_recipe">Image of Recipe</string>
     <string name="start_recipe_button">Start Recipe</string>
+    <string name="ingredient_list_hint">Enter recipe ingredients with each entry on a new line</string>
 </resources>
