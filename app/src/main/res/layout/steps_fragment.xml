@@ -46,16 +46,25 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/title_view_switcher"
         android:indeterminate="false"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_margin="8dp"
         android:progress="0"
         />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/steps_hint_box"
+        android:text="@string/no_steps_yet_press_the_title_to_add_some"
+        android:layout_below="@id/progress"
+        android:layout_margin="8dp"
+        android:visibility="gone"/>
+
     <ListView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id = "@+id/steps"
         android:layout_below="@id/progress"
-        android:padding="10dp"
+        android:layout_margin="8dp"
         android:scrollbarStyle="outsideOverlay"
         />
     <Button

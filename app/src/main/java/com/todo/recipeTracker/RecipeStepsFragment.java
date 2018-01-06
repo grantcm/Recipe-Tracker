@@ -30,6 +30,7 @@ public class RecipeStepsFragment extends Fragment {
     private String titleMessage;
     private ViewSwitcher titleViewSwitcher;
     private TextView title;
+    private TextView helpMessage;
     private EditText editTitle;
     private ListView tasks;
     private ArrayList<RecipeItem> taskList;
@@ -80,6 +81,7 @@ public class RecipeStepsFragment extends Fragment {
         titleViewSwitcher = view.findViewById(R.id.title_view_switcher);
         title = titleViewSwitcher.findViewById(R.id.title);
         editTitle = titleViewSwitcher.findViewById(R.id.edit_recipe_title_box);
+        helpMessage = view.findViewById(R.id.steps_hint_box);
         title.setText(titleMessage);
         setupTitleOnLongClick();
         inspectArrayAdapter = new InspectArrayAdapter(this.getContext(),
@@ -190,8 +192,26 @@ public class RecipeStepsFragment extends Fragment {
                 taskList.add(new RecipeItem(entry[STEP_POS], Boolean.parseBoolean(entry[CHECKED_POS]),
                         Integer.parseInt(entry[TIME_POS])));
             }
-            progress.setMax(taskList.size());
-            progress.setProgress(completed);
+            updateProgressBar(completed);
+            displayHelperMessage();
+        }
+    }
+
+    /**
+     * updates the progress bar when max size changes
+     * @param completed number of tasks checked off
+     */
+    private void updateProgressBar(int completed) {
+        progress.setMax(taskList.size());
+        progress.setProgress(completed);
+    }
+
+    /**
+     * Sets the help message to visible if the display list is empty
+     */
+    private void displayHelperMessage () {
+        if (inspectArrayAdapter.getCount() == 0) {
+            helpMessage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -220,6 +240,8 @@ public class RecipeStepsFragment extends Fragment {
             inEditView = false;
             title.setText(editTitle.getText().toString());
             titleViewSwitcher.setDisplayedChild(0);
+            displayHelperMessage();
+            updateProgressBar(0);
             for (RecipeItem r : taskList) {
                 r.setEditClicked(false);
             }
@@ -227,6 +249,7 @@ public class RecipeStepsFragment extends Fragment {
         } else {
             editTitle.setText(title.getText().toString());
             progress.setVisibility(View.GONE);
+            helpMessage.setVisibility(View.GONE);
             titleViewSwitcher.setDisplayedChild(1);
             addRowButton.setVisibility(View.VISIBLE);
             inEditView = true;

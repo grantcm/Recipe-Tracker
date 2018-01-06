@@ -68,8 +68,6 @@ public class InspectArrayAdapter extends ArrayAdapter<RecipeItem> {
                 }
             });
 
-
-
             setupTimerRadioButton(timerButton, item, timerText, timerPrompt);
 
             if (item.getRequiresClock()) {

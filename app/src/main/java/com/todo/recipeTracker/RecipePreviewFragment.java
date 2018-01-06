@@ -32,7 +32,6 @@ public class RecipePreviewFragment extends Fragment {
     private String titleMessage;
     private ArrayAdapter<String> displayListAdapter;
     private ListView displayListView;
-    private ArrayList<String> displayElements;
     private Button startButton;
     private TextView titleView;
     private ImageView imageView;
@@ -59,7 +58,6 @@ public class RecipePreviewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        displayElements = new ArrayList<>();
         data = new Data(getActivity());
         Bundle arguments = getArguments();
         titleMessage = arguments.getString(TITLE_KEYWORD);
@@ -84,8 +82,9 @@ public class RecipePreviewFragment extends Fragment {
         titleView = view.findViewById(R.id.recipe_title_view);
         setupTitleView();
         startButton = view.findViewById(R.id.start_recipe_button);
+        editPreviewBox = view.findViewById(R.id.edit_recipe_description_text);
         displayListAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, displayElements);
+                android.R.layout.simple_list_item_1);
         displayListView.setAdapter(displayListAdapter);
         imageView = view.findViewById(R.id.recipe_image);
         if (IMAGE_PATH.equals("")) {
@@ -118,19 +117,34 @@ public class RecipePreviewFragment extends Fragment {
     }
 
     /**
+     * @return an ArrayList representation of the ingredient list
+     */
+    public ArrayList<String> getIngredientList() {
+        return parseArrayAdapterItems();
+    }
+
+    /**
      *  Writes data to [RecipeTitle]ingredients.txt file
      */
     private void writeData() {
         if (dataChanged) {
-            if (displayElements.size() == 1 && displayElements.get(0).equals(PREVIEW_MESSAGE)) {
-                displayElements.clear();
-                dataChanged = false;
+            if (displayListAdapter.getCount() == 1 &&
+                    displayListAdapter.getItem(0).equals(PREVIEW_MESSAGE)) {
+                displayListAdapter.clear();
             } else {
                 String FILENAME = titleMessage.concat(INGREDIENTS_FILE_END);
-                data.writeFile(FILENAME, displayElements);
-                dataChanged=false;
+                data.writeFile(FILENAME, parseArrayAdapterItems());
             }
+            dataChanged = false;
         }
+    }
+
+    private ArrayList<String> parseArrayAdapterItems () {
+        ArrayList<String> output = new ArrayList<>();
+        for (int i = 0; i <displayListAdapter.getCount(); i++) {
+            output.add(displayListAdapter.getItem(i));
+        }
+        return output;
     }
 
     /**
@@ -138,7 +152,8 @@ public class RecipePreviewFragment extends Fragment {
      */
     private void readData() {
         String FILENAME = titleMessage.concat(INGREDIENTS_FILE_END);
-        displayElements = data.readFile(FILENAME);
+        ArrayList<String> displayElements = data.readFile(FILENAME);
+        displayListAdapter.clear();
         displayListAdapter.addAll(displayElements);
         if (displayListAdapter.isEmpty()) {
             displayListAdapter.add(PREVIEW_MESSAGE);
@@ -150,6 +165,7 @@ public class RecipePreviewFragment extends Fragment {
         if (inEditView) {
             if (editPreviewBox.hasFocus()) {
                 editPreviewContainer.requestFocus();
+                parseEditBox();
             } else {
                 changeViewToEdit();
             }
@@ -159,16 +175,48 @@ public class RecipePreviewFragment extends Fragment {
     }
 
     /**
+     * Converts the ingredient list to a string with each element separated by a newline
+     */
+    private String parseIngredientList () {
+        StringBuilder output = new StringBuilder();
+        if (displayListAdapter.getItem(0).equals(PREVIEW_MESSAGE)) {
+            return "";
+        }
+        for (int i = 0; i <displayListAdapter.getCount(); i++) {
+            output.append(displayListAdapter.getItem(i));
+            output.append("\n");
+        }
+        return output.toString();
+    }
+
+    /**
+     * Parses the content of the edit box into the display adapater
+     * Splits on the newline character
+     */
+    private void parseEditBox() {
+        String listItems = editPreviewBox.getText().toString();
+        String[] items = listItems.split("\n");
+        displayListAdapter.clear();
+        for (String s : items) {
+            displayListAdapter.add(s);
+        }
+        dataChanged = true;
+        writeData();
+    }
+
+    /**
      * Changes view to edit or normal
      */
     public void changeViewToEdit () {
         if (inEditView) {
             normalPreviewContainer.setVisibility(View.VISIBLE);
             editPreviewContainer.setVisibility(View.GONE);
+            parseEditBox();
             inEditView = false;
         } else {
             normalPreviewContainer.setVisibility(View.GONE);
             editPreviewContainer.setVisibility(View.VISIBLE);
+            editPreviewBox.setText(parseIngredientList());
             inEditView = true;
         }
     }

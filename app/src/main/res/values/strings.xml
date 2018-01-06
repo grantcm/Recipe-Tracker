@@ -17,4 +17,5 @@
     <string name="image_of_recipe">Image of Recipe</string>
     <string name="start_recipe_button">Start Recipe</string>
     <string name="ingredient_list_hint">Enter recipe ingredients with each entry on a new line</string>
+    <string name="no_steps_yet_press_the_title_to_add_some">No steps yet. Press the title to add some.</string>
 </resources>
