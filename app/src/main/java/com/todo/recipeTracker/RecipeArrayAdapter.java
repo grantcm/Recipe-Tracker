@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.List;
@@ -24,39 +26,56 @@ import static com.todo.recipeTracker.R.color.Medium;
 public class RecipeArrayAdapter extends ArrayAdapter<Recipe> {
 
     private LayoutInflater mInflater;
-    private int mResource;
+    private boolean checkable = false;
+    private MainActivity parentClass;
 
-    public RecipeArrayAdapter(Context context, int textViewResourceId, List<Recipe> objects) {
+    public RecipeArrayAdapter(Context context, int textViewResourceId, List<Recipe> objects
+            , MainActivity parentClass) {
         super(context, textViewResourceId, objects);
         mInflater = LayoutInflater.from(context);
-        mResource = textViewResourceId;
+        this.parentClass = parentClass;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        return this.createViewFromResource(mInflater, position, convertView, parent, mResource);
+        return this.createViewFromResource(mInflater, position, convertView, parent);
+    }
+
+    public void setCheckable(boolean checkable) {
+        this.checkable = checkable;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private View createViewFromResource(LayoutInflater inflater, int position,
-                                        View convertView, ViewGroup parent, int resource) {
+    private View createViewFromResource(LayoutInflater inflater, final int position,
+                                        View convertView, final ViewGroup parent) {
         final View view;
         final TextView text;
+        final CheckBox check;
 
         if (convertView == null) {
-            view = inflater.inflate(resource, parent, false);
+            view = inflater.inflate(R.layout.recipe_row, parent, false);
         } else {
             view = convertView;
         }
 
-        try {
-            text = (TextView) view;
-        } catch (ClassCastException e) {
-            Log.e("ArrayAdapter", "You must supply a resource ID for a TextView");
-            throw new IllegalStateException(
-                    "ArrayAdapter requires the resource ID to be a TextView", e);
+        text = view.findViewById(R.id.textView);
+        check = view.findViewById(R.id.check_Box);
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (check.isChecked()) {
+                    parentClass.addListPosition(position);
+                } else {
+                    parentClass.removeListPosition(position);
+                }
+            }
+        });
+        if(checkable) {
+            check.setVisibility(View.VISIBLE);
+        } else {
+            check.setVisibility(View.GONE);
         }
 
         final Recipe item = getItem(position);

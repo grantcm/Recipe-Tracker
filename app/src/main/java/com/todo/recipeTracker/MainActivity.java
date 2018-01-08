@@ -1,22 +1,42 @@
 package com.todo.recipeTracker;
 
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.ActionMode;
+import android.view.ActionProvider;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Recipe> items;
     private RecipeArrayAdapter itemsAdapter;
     private ListView listView;
+    private TextView selectedCount;
     private Data data;
+    private Toolbar toolbar;
+    private RelativeLayout addItemContainer;
+    private MenuItem actionMenuItem;
     private boolean dataChanged = false;
+    private boolean viewCheckable = false;
+    //TODO: use a map to store positions and count i.e. [RECIPE AT POS] x [QUANTITY]
+    private Set<Integer> listPositions;
 
     //TEST DATA
     private final String[] testData = {"One", "Two", "Three", "Four"};
@@ -28,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         this.data = new Data(this);
         this.items = new ArrayList<>();
+        this.listPositions = new HashSet<>();
     }
 
     @Override
@@ -36,9 +57,84 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         readData();
         listView = findViewById(R.id.lvItems);
-        itemsAdapter = new RecipeArrayAdapter(this, android.R.layout.simple_list_item_1, items);
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        toolbar = findViewById(R.id.main_view_toolbar);
+        addItemContainer = findViewById(R.id.add_recipe_container);
+        setSupportActionBar(toolbar);
+        itemsAdapter = new RecipeArrayAdapter(this, android.R.layout.simple_list_item_1
+                , items, this);
         listView.setAdapter(itemsAdapter);
         setupOnClickListener();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        MenuItem actionItem = menu.findItem(R.id.action_grocery_bag);
+        actionItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                updateViewToCheckAble();
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                updateViewToCheckAble();
+                return true;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_grocery_bag:
+                actionMenuItem = item;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Sets the checkboxes as viewable and updates the action bar to display context specific actions
+     */
+    private void updateViewToCheckAble () {
+        if(viewCheckable) {
+            viewCheckable = false;
+            listPositions.clear();
+            addItemContainer.setVisibility(View.VISIBLE);
+            itemsAdapter.setCheckable(viewCheckable);
+            itemsAdapter.notifyDataSetChanged();
+        } else {
+            viewCheckable = true;
+            addItemContainer.setVisibility(View.GONE);
+            itemsAdapter.setCheckable(viewCheckable);
+            itemsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void addListPosition(int position) {
+        listPositions.add(position);
+        if (selectedCount == null) {
+            selectedCount = findViewById(R.id.selected_count);
+            selectedCount.setText(Integer.toString(listPositions.size()));
+        } else {
+            selectedCount.setText(Integer.toString(listPositions.size()));
+        }
+    }
+
+    public void removeListPosition(int position) {
+        listPositions.remove(position);
+        if (selectedCount == null) {
+            selectedCount = findViewById(R.id.selected_count);
+            selectedCount.setText(Integer.toString(listPositions.size()));
+        } else {
+            selectedCount.setText(Integer.toString(listPositions.size()));
+        }
     }
 
     @Override
@@ -128,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
      * @param view the EditText View with new task
      */
     public void onClickAdd(View view) {
-        EditText et = (EditText) findViewById(R.id.etNewTask);
+        EditText et = findViewById(R.id.etNewTask);
         String text = et.getText().toString();
         Recipe recipe = new Recipe(text);
         if (items.contains(recipe)) {
@@ -141,4 +237,25 @@ public class MainActivity extends AppCompatActivity {
         dataChanged = true;
     }
 
+    public void onClickAddToGroceryList(View view) {
+        launchGroceryListActivity();
+        actionMenuItem.collapseActionView();
+    }
+
+    private void launchGroceryListActivity() {
+        ArrayList<String> groceryListItems = parsePositionList();
+
+        Intent intent = new Intent(this, GroceryListActivity.class);
+        intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+        intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_KEYWORD, groceryListItems);
+        startActivity(intent);
+    }
+
+    private ArrayList<String> parsePositionList() {
+        ArrayList<String> recipeItems = new ArrayList<>();
+        for (int i : listPositions) {
+            recipeItems.addAll(itemsAdapter.getItem(i).getIngredients());
+        }
+        return recipeItems;
+    }
 }

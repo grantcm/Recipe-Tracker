@@ -22,13 +22,14 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         >
+        <!--TODO:Get rid of viewswitcher without messing up layout-->
         <CheckBox
             android:id="@+id/check_Box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleX="1.5"
             android:scaleY="1.5"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center"
             />
 
 
