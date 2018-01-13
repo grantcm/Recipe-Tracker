@@ -349,12 +349,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GroceryListActivity.class);
 
         if (drawerAdapter.getPosition(groceryListName) == -1) {
-            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, groceryListName);
             intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_KEYWORD, groceryListItems);
 
             drawerAdapter.add(groceryListName);
         } else {
-            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, groceryListName);
             intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_ADDITEMS, groceryListItems);
         }
         startActivity(intent);

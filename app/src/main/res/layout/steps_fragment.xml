@@ -64,6 +64,7 @@
         android:layout_height="wrap_content"
         android:id = "@+id/steps"
         android:layout_below="@id/progress"
+        android:layout_above="@+id/add_new_row_button"
         android:layout_margin="8dp"
         android:scrollbarStyle="outsideOverlay"
         />
@@ -72,8 +73,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/add_new_row_button"
         android:text="@string/add_step"
-        android:layout_below="@id/steps"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:visibility="gone"
         android:onClick="onClickAddNewRow"/>
 </RelativeLayout>

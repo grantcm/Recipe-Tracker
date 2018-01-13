@@ -95,7 +95,10 @@ public class RecipeStepsFragment extends Fragment {
     }
 
     public boolean handleBackPressed(){
-        if (inEditView && lastEdited.getEditClicked()) {
+        if (inEditView && lastEdited==null) {
+            updateMainViewToEdit();
+            return true;
+        } else if (inEditView && lastEdited.getEditClicked()) {
             lastEdited.setEditClicked(false);
             inspectArrayAdapter.notifyDataSetChanged();
             return true;
@@ -233,7 +236,6 @@ public class RecipeStepsFragment extends Fragment {
 
     public void updateMainViewToEdit() {
         dataChanged = true;
-
         if (inEditView) {
             addRowButton.setVisibility(View.GONE);
             progress.setVisibility(View.VISIBLE);
@@ -253,6 +255,7 @@ public class RecipeStepsFragment extends Fragment {
             titleViewSwitcher.setDisplayedChild(1);
             addRowButton.setVisibility(View.VISIBLE);
             inEditView = true;
+            tasks.setVerticalScrollBarEnabled(true);
             inspectArrayAdapter.notifyDataSetChanged();
         }
     }
