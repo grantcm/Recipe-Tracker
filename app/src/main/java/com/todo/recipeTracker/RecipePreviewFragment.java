@@ -43,9 +43,11 @@ public class RecipePreviewFragment extends Fragment {
     private Boolean inEditView = false;
     private static final String TITLE_KEYWORD = "TITLE";
     private static final String FILE_END = ".txt";
-    private static final String INGREDIENTS_FILE_END = "ingredients.txt";
     private static final String PREVIEW_MESSAGE = "No items here. Try pressing the title to add ingredients.";
     private static String IMAGE_PATH = "";
+
+    public static final String INGREDIENTS_FILE_END = "ingredients.txt";
+
 
     public static RecipePreviewFragment newInstance(String title) {
         RecipePreviewFragment newFragment = new RecipePreviewFragment();

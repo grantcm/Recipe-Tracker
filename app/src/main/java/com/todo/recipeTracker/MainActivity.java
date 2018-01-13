@@ -1,33 +1,40 @@
 package com.todo.recipeTracker;
 
 import android.content.Intent;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.ActionMode;
-import android.view.ActionProvider;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Recipe> items;
+    private ArrayList<String> groceryLists;
     private RecipeArrayAdapter itemsAdapter;
     private ListView listView;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ListView drawerView;
+    private ArrayAdapter<String> drawerAdapter;
     private TextView selectedCount;
     private Data data;
     private Toolbar toolbar;
@@ -38,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
     //TODO: use a map to store positions and count i.e. [RECIPE AT POS] x [QUANTITY]
     private Set<Integer> listPositions;
 
-    //TEST DATA
-    private final String[] testData = {"One", "Two", "Three", "Four"};
+    private final static String RECIPES_NAV = "Recipes";
     private final static String FILENAME = "main.txt";
+    private final static String NAVIGATION_DATA = "nav.txt";
 
     public final static String LIST_ITEMS = "com.recipe.LIST.ITEMS";
     public final static String TITLE = "com.recipe.TITLE";
@@ -49,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         this.data = new Data(this);
         this.items = new ArrayList<>();
         this.listPositions = new HashSet<>();
+        this.groceryLists = new ArrayList<>();
     }
 
     @Override
@@ -56,15 +64,63 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         readData();
+        setupViews();
+        readNavigationData();
+        setupOnClickListener();
+    }
+
+    private void setupViews() {
         listView = findViewById(R.id.lvItems);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         toolbar = findViewById(R.id.main_view_toolbar);
         addItemContainer = findViewById(R.id.add_recipe_container);
+        drawerLayout = findViewById(R.id.navigation_drawer);
+        drawerView = findViewById(R.id.navigation);
+        drawerAdapter = new ArrayAdapter<>(this,
+                R.layout.draw_item_layout   );
+        drawerView.setAdapter(drawerAdapter);
         setSupportActionBar(toolbar);
         itemsAdapter = new RecipeArrayAdapter(this, android.R.layout.simple_list_item_1
                 , items, this);
         listView.setAdapter(itemsAdapter);
-        setupOnClickListener();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                R.string.open,
+                R.string.close
+        ) {
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        drawerView.setOnItemClickListener(new DrawerItemClickListener());
+        drawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+        selectItem(0);
+    }
+
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    private void selectItem(int position) {
+        drawerView.setItemChecked(position, true);
+        if (position != 0) {
+            String title = drawerAdapter.getItem(position);
+            launchGroceryListActivity(title);
+        } else {
+            drawerLayout.closeDrawer(Gravity.LEFT);
+        }
     }
 
     @Override
@@ -90,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //TODO: Rewrite
+        if (mDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+
         switch(item.getItemId()) {
             case R.id.action_grocery_bag:
                 actionMenuItem = item;
@@ -99,24 +160,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed(){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(Gravity.LEFT);
+        } else {
+            super.onBackPressed();
+        }
+    }
     /**
      * Sets the checkboxes as viewable and updates the action bar to display context specific actions
      */
     private void updateViewToCheckAble () {
         if(viewCheckable) {
             viewCheckable = false;
-            listPositions.clear();
             addItemContainer.setVisibility(View.VISIBLE);
             itemsAdapter.setCheckable(viewCheckable);
             itemsAdapter.notifyDataSetChanged();
         } else {
             viewCheckable = true;
+            listPositions.clear();
             addItemContainer.setVisibility(View.GONE);
             itemsAdapter.setCheckable(viewCheckable);
             itemsAdapter.notifyDataSetChanged();
         }
     }
 
+    //Adds the clicked item to the set of selected positions
     public void addListPosition(int position) {
         listPositions.add(position);
         if (selectedCount == null) {
@@ -127,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Removes the clicked item froms et of positions
     public void removeListPosition(int position) {
         listPositions.remove(position);
         if (selectedCount == null) {
@@ -141,25 +212,40 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         writeData();
+        writeNavigationData();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         readData();
+        readNavigationData();
     }
 
     /**
      * Converts recipe list to string list then writes to file
      */
     private void writeData() {
-        if (dataChanged) {
-            ArrayList<String> itemList = new ArrayList<>();
-            for(Recipe r: items) {
-                itemList.add(r.toString());
-            }
-            data.writeFile(FILENAME, itemList);
-            dataChanged = false;
+        ArrayList<String> itemList = new ArrayList<>();
+        for(Recipe r: items) {
+            itemList.add(r.toString());
+        }
+        data.writeFile(FILENAME, itemList);
+    }
+
+    private void writeNavigationData() {
+        ArrayList<String> navList = new ArrayList<>();
+        for (int i = 1; i < drawerAdapter.getCount(); i++) {
+            navList.add(drawerAdapter.getItem(i));
+        }
+        data.writeFile(NAVIGATION_DATA, navList);
+    }
+    private void readNavigationData() {
+        drawerAdapter.clear();
+        drawerAdapter.add(RECIPES_NAV);
+        ArrayList<String> navList = data.readFile(NAVIGATION_DATA);
+        for (String s: navList) {
+            drawerAdapter.add(s);
         }
     }
 
@@ -173,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
             for(String s: itemList) {
                 items.add(new Recipe(s));
             }
-            dataChanged = false;
         }
     }
 
@@ -214,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void launchInspectActivity(Recipe item) {
         Intent intent = new Intent(this, InspectRecipeActivity.class);
-        intent.putExtra(LIST_ITEMS, testData);
         intent.putExtra(TITLE, item.getTitle());
         startActivity(intent);
     }
@@ -238,24 +322,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickAddToGroceryList(View view) {
-        launchGroceryListActivity();
+        EditText title = actionMenuItem.getActionView().findViewById(R.id.grocery_list_title_edit);
+        launchGroceryListActivity(title.getText().toString());
         actionMenuItem.collapseActionView();
     }
 
     private void launchGroceryListActivity() {
         ArrayList<String> groceryListItems = parsePositionList();
-
+        String groceryListName = "test";
         Intent intent = new Intent(this, GroceryListActivity.class);
-        intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
-        intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_KEYWORD, groceryListItems);
+
+        if (drawerAdapter.getPosition(groceryListName) == -1) {
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_KEYWORD, groceryListItems);
+
+            drawerAdapter.add(groceryListName);
+        } else {
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_ADDITEMS, groceryListItems);
+        }
+        startActivity(intent);
+    }
+
+    private void launchGroceryListActivity(String groceryListName) {
+        ArrayList<String> groceryListItems = parsePositionList();
+        Intent intent = new Intent(this, GroceryListActivity.class);
+
+        if (drawerAdapter.getPosition(groceryListName) == -1) {
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_KEYWORD, groceryListItems);
+
+            drawerAdapter.add(groceryListName);
+        } else {
+            intent.putExtra(GroceryListActivity.TITLE_INTENT_KEYWORD, "test");
+            intent.putExtra(GroceryListActivity.GROCERY_LIST_INTENT_ADDITEMS, groceryListItems);
+        }
         startActivity(intent);
     }
 
     private ArrayList<String> parsePositionList() {
         ArrayList<String> recipeItems = new ArrayList<>();
         for (int i : listPositions) {
-            recipeItems.addAll(itemsAdapter.getItem(i).getIngredients());
+            String fileToRead = itemsAdapter.getItem(i).getTitle()
+                    .concat(RecipePreviewFragment.INGREDIENTS_FILE_END);
+            recipeItems.addAll(data.readFile(fileToRead));
         }
+        listPositions.clear();
         return recipeItems;
     }
 }

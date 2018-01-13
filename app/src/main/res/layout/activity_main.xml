@@ -1,58 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/navigation_drawer"
     android:layout_height="match_parent"
+    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/main_view_toolbar"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-    </android.support.v7.widget.Toolbar>
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        >
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_view_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        </android.support.v7.widget.Toolbar>
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id = "@+id/lvItems"
+            android:layout_below="@id/main_view_toolbar"
+            android:scrollbarStyle="outsideOverlay"
+            android:layout_margin="8dp" />
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id = "@+id/lvItems"
-        android:layout_below="@id/main_view_toolbar"
-        android:layout_margin="8dp" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/add_recipe_container"
-        android:layout_below="@id/lvItems"
-        android:layout_alignParentBottom="true">
-        <Button
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_item_button"
-            android:id="@+id/btnAddItem"
-            android:layout_alignParentBottom ="true"
-            android:layout_alignParentEnd ="true"
-            android:onClick="onClickAdd"
-            android:layout_margin="8dp"
-            />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id ="@+id/etNewTask"
-            android:layout_alignTop = "@id/btnAddItem"
-            android:hint = "@string/new_recipe"
-            android:layout_alignParentStart ="true"
-            android:layout_toStartOf="@id/btnAddItem"
-            android:layout_alignParentBottom ="true"
-            android:layout_margin="8dp"
-            />
+            android:id="@+id/add_recipe_container"
+            android:layout_below="@id/lvItems"
+            android:layout_alignParentBottom="true">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_item_button"
+                android:id="@+id/btnAddItem"
+                android:layout_alignParentBottom ="true"
+                android:layout_alignParentEnd ="true"
+                android:onClick="onClickAdd"
+                android:layout_margin="8dp"
+                />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id ="@+id/etNewTask"
+                android:layout_alignTop = "@id/btnAddItem"
+                android:hint = "@string/new_recipe"
+                android:layout_alignParentStart ="true"
+                android:layout_toStartOf="@id/btnAddItem"
+                android:layout_alignParentBottom ="true"
+                android:layout_margin="8dp"
+                />
+        </RelativeLayout>
+
     </RelativeLayout>
 
-</RelativeLayout>
+    <ListView
+        android:id="@+id/navigation"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
+
+</android.support.v4.widget.DrawerLayout>
